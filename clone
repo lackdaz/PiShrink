@@ -1,0 +1,64 @@
+#!/bin/bash
+# Copyright (c) 2020 Seth Loh 
+# MIT License
+# Clone images easily
+
+function usage
+{
+    echo " usage: ./clone [ [-o #filename ] | [ -h ]"
+    echo "   -o #filename - #image name excluding extension (*.img)"
+    echo "   -h | --help  This message"
+}
+
+IMAGE_SIZE=64
+SRC=/dev/mmcblk0
+TARGET_PATH=/media/lackdaz/T5
+GB_SIZE=$((( "$IMAGE_SIZE" )*1000*1000))
+NOW=`date '+%F_%H:%M:%S'`
+
+# Iterate through command line inputs
+if [ "$#" -gt 2 ] || [ "$#" == 0 ]  ; then
+  usage
+  exit 1
+fi
+while [ "$1" != "" ]; do
+    case $1 in
+        -o | -O )      
+                                shift
+                                echo $NOW
+                                    FILENAME=$1
+                                    if [[ $FILENAME == "" ]] ; then
+                                        echo "Please specify an image name, e.g. foo"
+                                        usage
+                                        exit 1
+                                    fi
+                                    echo $(date | md5sum)
+                                    echo "${TARGET_PATH}/${FILENAME}.img"
+                                    sudo ddrescue -v -r 1 -n -b $GB_SIZE $SRC "${TARGET_PATH}/${FILENAME}.img"  ${TARGET_PATH}/${FILENAME}-${NOW}.log \
+                                    && sudo ./pishrink.sh -va ${FILENAME}.img
+                                    ;;
+
+        -h | --help )           usage
+                                exit
+                                ;;
+      
+        * )                     echo "test"
+				usage
+                                exit 1
+                                ;;
+    esac
+   shift
+done
+# NRDEVICES=$(grep -c ^processor /proc/cpuinfo | sed 's/^0$/1/')
+# REQUESTED_BYTES=$((( "$MEGABYTES" / "${NRDEVICES}" )*1024*1024))
+# # The configuration file is here:
+# CONFIG_FILE=/etc/systemd/nvzramconfig.sh
+
+# if [ -f $CONFIG_FILE ] ; then
+#   # we replace the memory request with the desired outcome
+#   sudo sed -i '/^mem=/c\mem='"$REQUESTED_BYTES"'' $CONFIG_FILE
+#   echo "Please reboot for changes to take effect."
+# else
+#   echo "The swap configuration file does not exist."
+#   echo "Unable to configure swap memory"
+# fi
