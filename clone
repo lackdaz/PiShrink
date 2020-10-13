@@ -37,9 +37,9 @@ while [ "$1" != "" ]; do
                                     echo "cloning and compressing to: ${TARGET_PATH}/${FILENAME}.img"
                                     sudo ddrescue -v -r 1 -n -b $GB_SIZE $SRC "${TARGET_PATH}/${FILENAME}.img" $LOGFILE && \
                                     sudo chown lackdaz:lackdaz ${TARGET_PATH}/${FILENAME}.img \
-                                    && sudo ${TARGET_PATH}/../PiShrink/pishrink.sh -va  ${TARGET_PATH}/${FILENAME}.img \
                                     && sudo rm $LOGFILE \
                                     ;;
+                                    # && sudo ${TARGET_PATH}/../PiShrink/pishrink.sh -va  ${TARGET_PATH}/${FILENAME}.img \
 
         -h | --help )           usage
                                 exit
